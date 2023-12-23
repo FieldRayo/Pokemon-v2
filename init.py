@@ -29,7 +29,7 @@ class Pokemon:
         self.type: object = None
         self.counter = []
 
-        self.xp = 0
+        self._xp = 0
         self.xp_need = 0
         self.level = 0
 
@@ -53,6 +53,16 @@ class Pokemon:
 
         self.skills = {'Placaje': skills_data['Placaje']}
         self.nature: object = None
+    
+    @property
+    def xp(self):
+        return self._xp
+
+    def get_init_stats(self):
+        return self.iv_health, self.iv_damage, self.iv_defense, self.iv_speed, self.iv_precision
+
+    def get_stats(self):
+        return self.health, self.damage, self.defense, self.speed, self.precision
 
     def set_type(self, type_):
         self.type = type_
@@ -84,15 +94,13 @@ class Pokemon:
         self.precision = args[4]
 
         self.mean = sum(args) / 5
+    
+    @xp.setter
+    def set_xp(self, xp):
+        self.xp = xp
 
     def set_counter(self, type_):
         self.counter = type_.counter
-
-    def get_init_stats(self):
-        return self.iv_health, self.iv_damage, self.iv_defense, self.iv_speed, self.iv_precision
-
-    def get_stats(self):
-        return self.health, self.damage, self.defense, self.speed, self.precision
 
     def level_up(self):
         while self.xp >= self.xp_need:
@@ -161,6 +169,7 @@ charmander.set_init_stats(random.sample(range(0, 100), 5))
 charmander.set_standard_stats()
 
 charmander.xp_need = 1
+charmander.xp()
 
 # Pokemon - Data
 init_pokemon_data = {'Charmander': charmander}
