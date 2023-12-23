@@ -3,21 +3,15 @@ import math
 
 
 class Player:
-    def __init__(self):
-        self.name = ''
-        self.gender = ''
-        self.init_pokemon = ''
+    def __init__(self, name, gender):
+        self.name = name
+        self.gender = gender
+        self.init_pokemon: object = None
 
         self.team = []
 
-    def set_name(self, name):
-        self.name = name
-
-    def set_gender(self, gender):
-        self.gender = gender
-
     def set_init_pokemon(self, init_pokemon):
-        if self.init_pokemon == '' and init_pokemon in init_pokemon_data:
+        if not self.init_pokemon and init_pokemon.name in init_pokemon_data:
             self.init_pokemon = init_pokemon
 
 
@@ -29,7 +23,7 @@ class Pokemon:
         self.type: object = None
         self.counter = []
 
-        self._xp = 0
+        self.xp = 0
         self.xp_need = 0
         self.level = 0
 
@@ -54,15 +48,14 @@ class Pokemon:
         self.skills = {'Placaje': skills_data['Placaje']}
         self.nature: object = None
     
-    @property
-    def xp(self):
-        return self._xp
-
     def get_init_stats(self):
         return self.iv_health, self.iv_damage, self.iv_defense, self.iv_speed, self.iv_precision
 
     def get_stats(self):
         return self.health, self.damage, self.defense, self.speed, self.precision
+    
+    def get_xp(self):
+        return self.xp
 
     def set_type(self, type_):
         self.type = type_
@@ -83,9 +76,6 @@ class Pokemon:
         self.speed = self.type.speed * (self.level ** 1.5 + self.iv_speed) // 10
         self.precision = self.type.precision * (self.level * 1.5 + self.iv_precision) // 10
 
-        print(self.health, self.damage, self.defense, self.speed, self.precision)
-        print(self.level)
-
     def set_stats(self, args):
         self.health = args[0]
         self.damage = args[1]
@@ -95,7 +85,6 @@ class Pokemon:
 
         self.mean = sum(args) / 5
     
-    @xp.setter
     def set_xp(self, xp):
         self.xp = xp
 
@@ -169,9 +158,12 @@ charmander.set_init_stats(random.sample(range(0, 100), 5))
 charmander.set_standard_stats()
 
 charmander.xp_need = 1
-charmander.xp()
 
 # Pokemon - Data
-init_pokemon_data = {'Charmander': charmander}
-pokemon_data = {'Charmander': charmander}
+init_pokemon_data = {'Charmander': charmander,
+                     'Bulbasaur': 1,
+                     'Squirtle': 1}
+pokemon_data = {'Charmander': charmander,
+                'Bulbasaur': 1,
+                'Squirtle': 1}
 
