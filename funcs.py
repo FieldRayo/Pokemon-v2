@@ -1,9 +1,7 @@
 import time, os
 from init import init_pokemon_data, Player
 
-def print_str_effect(str_, end='\n'):
-    default_time = 0.025
-
+def print_str_effect(str_, default_time=0.025, end='\n'):
     if '|' in str_:
         process_str = str_.split('|')
         str_ = '|'.join([x for x in str_.split('|') if not x.isdigit()])
@@ -22,37 +20,65 @@ def print_str_effect(str_, end='\n'):
     print(end, end='')
 
 def new_player():
-    opt = ''
+    exit_option = ''
 
-    while opt.lower() != 's':
+    while exit_option.lower() != 's':
+        os.system('clear')
+
         print_str_effect('Bienvenido!,|15| dime,|15| como te llamas?: ')
         name = input('>>> ')
+        
         print_str_effect(f'Excelente nombre {name}!|10| ahora dime tu genero\n1: Chico\n2: Chica')
-        gender = input('>>> ')
+        gender = int(input('>>> ')) - 1
+        
+        print_str_effect(f'Para finalizar|15| ¿porque no me dices tu edad?')
+        age = int(input('>>> '))
 
-        opt = input('Confirmas tus datos(S/N)? : ')
-    
+        exit_option = input('Confirmas tus datos(S/N)? : ')
+
     print_str_effect('Perfecto, ahora podras empezar a jugar!')
-    player = Player(name, gender)
+    player = Player(name, gender, age)
 
     return player
 
 
 def chose_pokemon(player):
     pokemon = 0
-    opt = 0
+    pokemon_option = 0
+    exit_option = ''
+
     pokemon_options = ['Charmander', 'Bulbasaur', 'Squirtle']
     
-    while not pokemon:
+    while not pokemon and exit_option.lower() != 's':
         print_str_effect('Elije un pokemon entre las siguientes opciones: ')
         print('''
         1 -> Charmander
         2 -> Bulbasaur
         3 -> Squirtle
               ''')
-        opt = int(input('>>> '))
-        pokemon = init_pokemon_data.get(pokemon_options[opt-1], 0)
+        pokemon_option = int(input('>>> '))
+
+        print_str_effect('Estas segur{0} de tu eleccion(S/N)?'.format('a' if player.gender else 'o'))
+        exit_option = input('>>> ')
+
+        pokemon = init_pokemon_data.get(pokemon_options[pokemon_option-1], 0)
     
     player.set_init_pokemon(pokemon)
 
-new_player()
+def tutorial():
+    continue_option = ''
+    
+    print_str_effect('Bienvenido a este mundo de pokemon,|15| antes de iniciar con tu aventura'
+                     'te dare las instrucciones para que puedas tener una correcta experiencia|15|'
+                     '\n¿estas listo(S/N)?')
+    continue_option = input('>>> ')
+        
+    while continue_option.lower() != 's':
+        print_str_effect('.|65|.|65|.|65| ¿listo(S/N)?')
+        continue_option = input('>>> ')
+
+    
+
+#p1 = new_player()
+#chose_pokemon(p1)
+tutorial()

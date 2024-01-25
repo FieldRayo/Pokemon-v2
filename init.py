@@ -3,9 +3,11 @@ import math
 
 
 class Player:
-    def __init__(self, name, gender):
+    def __init__(self, name, gender, age):
         self.name = name
         self.gender = gender
+        self.age = age
+
         self.init_pokemon: object = None
 
         self.team = []
