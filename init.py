@@ -1,32 +1,66 @@
 import random
 import math
-
+import time
 
 class Player:
     def __init__(self, name, gender, age):
         self.name = name
         self.gender = gender
         self.age = age
+        self.id = random.randint(100000, 999999)
+
+        self.actual_menu = ''
 
         self.init_pokemon: object = None
 
-        self.team = []
+        self.pokemon_caught = {}
+        self.pokemon_team = {}
+        
+        self.pokemon_caught_data = {}
+        self.pokemon_team_data = {}
+
+        self.objects = {}
+        self.objects_data = {}
 
     def set_init_pokemon(self, init_pokemon):
         if not self.init_pokemon and init_pokemon.name in init_pokemon_data:
             self.init_pokemon = init_pokemon
 
+    def caught(pokemon):
+        self.pokemon_caught[pokemon.name] = pokemon
+        self.pokemon_caught_data[pokemon.name] = {}
+
+        for attr_name, attr_value in vars(pokemon).items():
+            self.pokemon_caught_data[pokemon.name][attr_name] = attr_value
+
+    def add_team(pokemon):
+        self.pokemon_team[pokemon.name] = pokemon
+        self.pokemon_team_data[pokemon.name] = {}
+
+        for attr_name, attr_value in vars(pokemon).items():
+            self.pokemon_team_data[pokemon.name][attr_name] = attr_value
+
+    def add_object(object_):
+        if object.name in self.objects:
+            self.objects[objects.name].amount += 1
+            return
+
+        self.objects[object_.name] = object_
+        self.objects_data[object_.name] = {}
+
+        for attr_name, attr_value in vars(object_).items():
+            self.objects_data[object_.name][attr_name] = attr_value
 
 class Pokemon:
     def __init__(self, name, gender, type_):
-        self.name = ''
-        self.gender = 0
+        self.name = name
+        self.gender = gender
 
-        self.type: object = None
+        self.type_: type_
         self.counter = []
 
         self.xp = 0
-        self.xp_need = 0
+        self.xp_need = 1
         self.level = 0
 
         # Init_stat
@@ -47,7 +81,7 @@ class Pokemon:
 
         self.mean = 0
 
-        self.skills = {'Placaje': skills_data['Placaje']}
+        self.skills = placaje
         self.nature: object = None
     
     def get_init_stats(self):

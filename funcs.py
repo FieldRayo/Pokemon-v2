@@ -1,5 +1,7 @@
 import time, os
-from init import init_pokemon_data, Player
+from init import init_pokemon_data, Player, Pokemon
+import designs
+import json
 
 def print_str_effect(str_, default_time=0.025, end='\n'):
     if '|' in str_:
@@ -18,6 +20,43 @@ def print_str_effect(str_, default_time=0.025, end='\n'):
             time.sleep(default_time)
 
     print(end, end='')
+
+def run_menu(player, menu):
+    option_menu = designs.get_option_menu(menu)
+    option = ''
+
+    print(designs.menu_ajust(menu))
+
+    while True:
+        option = input('>>> ')
+    
+        player.actual_menu = option_menu.get(option, 0)
+
+        if player.actual_menu: break
+    
+    os.system('clear')
+    print(designs.menu_ajust(player.actual_menu))
+
+def save_data(player):
+    for attr_name, attr_value in vars(player).items():
+        player_data[attr_name] = attr_value if type(attr_value) != object else None
+
+    with open('player.json', 'w') as json_file:
+        json.dump(player_data, json_file, indent=4)
+
+def load_data():
+    with open("player.json", "r") as json_file:
+        player_data = json.load(json_file)
+
+    player = Player(0, 0, 0)
+    
+    for attr_name in vars(player):
+        try:
+            setattr(player, attr_name, player_data[attr_name])
+        except KeyError:
+            continue
+    
+    return player
 
 def new_player():
     exit_option = ''
@@ -62,10 +101,10 @@ def chose_pokemon(player):
         exit_option = input('>>> ')
 
         pokemon = init_pokemon_data.get(pokemon_options[pokemon_option-1], 0)
-    
+
     player.set_init_pokemon(pokemon)
 
-def tutorial():
+def tutorial(player):
     continue_option = ''
     
     print_str_effect('Bienvenido a este mundo de pokemon,|15| antes de iniciar con tu aventura'
@@ -76,9 +115,16 @@ def tutorial():
     while continue_option.lower() != 's':
         print_str_effect('.|65|.|65|.|65| ¿listo(S/N)?')
         continue_option = input('>>> ')
-
     
+    print_str_effect('A continuacion tendras tu primera batalla pokémon!|20| ¿No es emocionante?|20|'
+                     '¡Claro que lo es!|15|, Tu primera batalla sera contra "Yalo"|15| un pokemon'
+                     ' de tipo electrico')
+    
+    option = ''
 
-#p1 = new_player()
-#chose_pokemon(p1)
-tutorial()
+    player.actual_menu = designs.battle_menu
+    while True:
+        print(player.actual_menu)
+        option = input('>>> ')
+
+
