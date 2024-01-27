@@ -1,4 +1,17 @@
 import init
+import json, os
+
+# Select game
+game_select_menu = '''
+╔═════════════════════════════════════════════════════════════════════╗
+║                             Partidas                                ║
+╠═════════════════════════════════════════════════════════════════════╣
+║  1 > {0} 3 > {2} 5 > Siguiente Pag.║
+║  2 > {1} 4 > {3}║
+╚═════════════════════════════════════════════════════════════════════╝
+
+'''
+
 
 # Init main menu
 main_menu = f'''
@@ -180,7 +193,8 @@ map_menu = '''
 main_menu_options = {'1': battle_menu,
                      '2': chat_menu}
 
-battle_menu_options = {'1': battle_menu_attack,
+battle_menu_options = {'0': main_menu,
+                       '1': battle_menu_attack,
                        '2': change_pokemon_menu,
                        '3': use_item_menu,
                        '4': opponent_pokemon_menu,

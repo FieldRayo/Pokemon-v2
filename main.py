@@ -1,32 +1,27 @@
 from designs import *
 import funcs
 import os, time
+import json
 
 def main():
     option = ''
     tutorial_option = ''
-
-    player = funcs.new_player()
-    time.sleep(2)
-    os.system('clear')
-    funcs.chose_pokemon(player)
-    time.sleep(2)
-    os.system('clear')
-
-    funcs.print_str_effect('¿Quieres jugar el tutorial(S/N)?')
-    tutorial_option = input('>>> ')
-
-    if tutorial_option.lower() == 's':
-        time.sleep(2)
-        os.system('clear')
-        funcs.tutorial(player)
+    game_option = 1
     
-    time.sleep(2)
+    # Load game
+    print(menu_ajust(game_select_menu))
+    game_option = input('>>> ')
+    time.sleep(1)
     os.system('clear')
 
-    player.actual_menu = main_menu
-    funcs.save_data(player)
+    if os.path.exists(f'./saves/save{game_option}.json'):
+        player = funcs.load_data(game_option)
+    else:
+        player = funcs.new_player()
+        player.n_game = game_option
 
+        funcs.save_data(player, game_option)
+        
     while True:
         funcs.run_menu(player, player.actual_menu)
         os.system('clear')

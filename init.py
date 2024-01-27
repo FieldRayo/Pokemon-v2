@@ -8,6 +8,7 @@ class Player:
         self.gender = gender
         self.age = age
         self.id = random.randint(100000, 999999)
+        self.n_game = 1
 
         self.actual_menu = ''
 
@@ -56,7 +57,7 @@ class Pokemon:
         self.name = name
         self.gender = gender
 
-        self.type_: type_
+        self.type_: Type = type_
         self.counter = []
 
         self.xp = 0

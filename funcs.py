@@ -37,15 +37,28 @@ def run_menu(player, menu):
     os.system('clear')
     print(designs.menu_ajust(player.actual_menu))
 
-def save_data(player):
-    for attr_name, attr_value in vars(player).items():
-        player_data[attr_name] = attr_value if type(attr_value) != object else None
+def object_to_dic(obj):
+    dic = vars(obj)
+    for key, value in dic.items():
+        if not isinstance(value, (str, int, float, bool, list)) and value:
+            dic[key] = object_to_dic(value)
 
-    with open('player.json', 'w') as json_file:
+    return dic
+
+def save_data(player, n_game):
+    player_data = {}
+
+    for attr_name, attr_value in vars(player).items():
+        if not isinstance(attr_value, Pokemon):
+            player_data[attr_name] = attr_value
+        else:
+            player_data[attr_name] = object_to_dic(attr_value)
+
+    with open(f'./saves/save{n_game}.json', 'w') as json_file:
         json.dump(player_data, json_file, indent=4)
 
-def load_data():
-    with open("player.json", "r") as json_file:
+def load_data(n_game):
+    with open(f'./saves/save{n_game}.json', 'r') as json_file:
         player_data = json.load(json_file)
 
     player = Player(0, 0, 0)
@@ -77,6 +90,26 @@ def new_player():
 
     print_str_effect('Perfecto, ahora podras empezar a jugar!')
     player = Player(name, gender, age)
+    
+    time.sleep(1.5)
+    os.system('clear')
+    chose_pokemon(player)
+    time.sleep(1.5)
+    os.system('clear')
+
+    print_str_effect('¿Quieres jugar el tutorial(S/N)?')
+    tutorial_option = input('>>> ')
+
+    if tutorial_option.lower() == 's':
+        time.sleep(2)
+        os.system('clear')
+        tutorial(player)
+    
+    time.sleep(2)
+    os.system('clear')
+
+    player.actual_menu = designs.main_menu
+
 
     return player
 
