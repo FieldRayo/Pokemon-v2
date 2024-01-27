@@ -21,26 +21,10 @@ def print_str_effect(str_, default_time=0.025, end='\n'):
 
     print(end, end='')
 
-def run_menu(player, menu):
-    option_menu = designs.get_option_menu(menu)
-    option = ''
-
-    print(designs.menu_ajust(menu))
-
-    while True:
-        option = input('>>> ')
-    
-        player.actual_menu = option_menu.get(option, 0)
-
-        if player.actual_menu: break
-    
-    os.system('clear')
-    print(designs.menu_ajust(player.actual_menu))
-
 def object_to_dic(obj):
     dic = vars(obj)
     for key, value in dic.items():
-        if not isinstance(value, (str, int, float, bool, list)) and value:
+        if not isinstance(value, (str, int, float, bool, list, tuple, dict)) and value:
             dic[key] = object_to_dic(value)
 
     return dic
@@ -49,11 +33,12 @@ def save_data(player, n_game):
     player_data = {}
 
     for attr_name, attr_value in vars(player).items():
-        if not isinstance(attr_value, Pokemon):
+        if isinstance(attr_value, (str, int, float, bool, list, tuple, dict)) or not attr_value:
             player_data[attr_name] = attr_value
         else:
             player_data[attr_name] = object_to_dic(attr_value)
-
+    
+    print(player_data)
     with open(f'./saves/save{n_game}.json', 'w') as json_file:
         json.dump(player_data, json_file, indent=4)
 

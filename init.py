@@ -10,7 +10,7 @@ class Player:
         self.id = random.randint(100000, 999999)
         self.n_game = 1
 
-        self.actual_menu = ''
+        self.actual_menu: object = None
 
         self.init_pokemon: object = None
 

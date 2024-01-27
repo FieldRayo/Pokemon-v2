@@ -9,10 +9,7 @@ def main():
     game_option = 1
     
     # Load game
-    print(menu_ajust(game_select_menu))
-    game_option = input('>>> ')
-    time.sleep(1)
-    os.system('clear')
+    game_option = game_select_menu.run_menu()
 
     if os.path.exists(f'./saves/save{game_option}.json'):
         player = funcs.load_data(game_option)
@@ -21,10 +18,10 @@ def main():
         player.n_game = game_option
 
         funcs.save_data(player, game_option)
-        
+    
+    player.actual_menu = main_menu
     while True:
-        funcs.run_menu(player, player.actual_menu)
-        os.system('clear')
+        player.actual_menu.run_menu()
 
 main_menu_options = {'1': battle_menu,
                      '2': chat_menu}

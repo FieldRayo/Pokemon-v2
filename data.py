@@ -2,7 +2,8 @@ import main
 import json, os
 
 def update():
-    data = {'n_games': len(os.listdir('./saves'))}
+    data = {'n_games': len(os.listdir('./saves')),
+            'actual_game': main.game_option}
     
     for a, n in enumerate(os.listdir('./saves')):
         with open(f'./saves/{n}', 'r') as json_file:
