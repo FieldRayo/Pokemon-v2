@@ -18,27 +18,32 @@ class Menu:
     def set_data(self, data):
         self.menu_data = data
 
-    def run_menu(self):
+    def run_menu(self, player=0):
         option = 0
         
-        if self.menu_data:
-            self.print_data()
-            self.menu_ajust()
-        
+        self.print_data()
+        self.menu_ajust()
+       
         print(self.design)
         option = input('>>> ')
         os.system('clear')
         
-        if not self.static_menu:
-            self.menu_options[option].run_menu()
-        else:
-            return option
+        if option == '0' and len(player.menu_history)-1:
+            player.menu_history.pop()
 
+        if not self.static_menu and option != '0':
+            set_menu_vals(self)
+            player.menu_history.append(self.menu_options[option])
+        elif option != '0':
+            return option
+        
+        player.actual_menu = player.menu_history[-1]
+        player.actual_menu.run_menu(player)
     
     def print_data(self):
         menu_data = self.menu_data
         size_data = self.size_data
-
+    
         menu_data += ['?'] * (size_data - len(menu_data))
         self.design = self.design.format(*self.menu_data)
     
@@ -68,57 +73,6 @@ class Menu:
     
         self.design = menu
 
-
-
-chat_menu = '''
-╔════════════════════════════════════════════════╗
-║                  MENÚ DE CHAT                  ║
-╠════════════════════════════════════════════════╣
-║ 1 > Mensajes Privados({1})║
-║ 2 > Perfil                                     ║
-║ 3 > Configuración                              ║
-║ 4 > Salir del Chat                             ║
-╚════════════════════════════════════════════════╝
-'''
-
-# Private messages (Option 1)
-private_messages_menu = '''
-╔════════════════════════════════════════════════╗
-║               MÉNSAJES PRIVADOS                ║
-╠════════════════════════════════════════════════╣
-║ 1 > {0} 5 > {4}║
-║ 2 > {1} 6 > {5}║
-║ 3 > {2} 7 > {6}║
-║ 4 > {3} 8 > {7}║
-║ 9 > Siguiente Pag. 10 > Salir                  ║
-╚════════════════════════════════════════════════╝
-'''
-# Porfile Menu (Option 2)
-porfile_menu = '''
-╔════════════════════════════════════════════════╗
-║                     PERFIL                     ║
-╠════════════════════════════════════════════════╣
-║ Nombre: {0}║
-║ Edad: {1}║
-║ Genero: {2}║
-║ Pokémones: {3}║
-║ ID: {4}║
-╚════════════════════════════════════════════════╝
-'''
-
-# Config Menu (Option 3)
-config_menu = '''
-╔════════════════════════════════════════════════╗
-║                  Configuración                 ║
-╠════════════════════════════════════════════════╣
-║ 1 > Cambiar Nombre                             ║
-║ 2 > Cambiar Edad                               ║
-║ 3 > Cambiar Genero                             ║
-║ 4 > Bloquear a                                 ║
-║ ID: {4}║
-╚════════════════════════════════════════════════╝
-'''
-
 # Map
 
 map_menu = '''
@@ -142,8 +96,8 @@ game_select_menu = Menu('game_select_menu', '''
 ║                             Partidas                                ║
 ╠═════════════════════════════════════════════════════════════════════╣
 ║  1 > {0}║
-║  3 > {2}║
 ║  2 > {1}║
+║  3 > {2}║
 ║  4 > {3}║
 ║  5 > Siguiente Pag.║
 ╚═════════════════════════════════════════════════════════════════════╝
@@ -151,6 +105,7 @@ game_select_menu = Menu('game_select_menu', '''
 ''', static_menu=True
 )
 
+# Main menu
 main_menu = Menu('main_menu', '''
 ╔══════════════════╗
 ║     POKÉMON      ║
@@ -162,10 +117,12 @@ main_menu = Menu('main_menu', '''
 ║ 5 > Pokedex      ║
 ║ 6 > Bolsa        ║
 ║ 7 > Ajustes      ║
-║ 8 > Salir        ║
+║ 8 > Guardar      ║
 ╚══════════════════╝
 '''
 )
+
+# Battle Menu
 
 battle_menu = Menu('battle_menu', '''
 ╔═════════════════════════════════════════════════════════════════════╗
@@ -178,39 +135,56 @@ battle_menu = Menu('battle_menu', '''
 '''
 )
 
+# Battle Menu Attack (Option 1)
+
 battle_menu_attack = Menu('battle_menu_attack', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                           MENÚ DE ATAQUE                            ║
 ╠═════════════════════════════════════════════════════════════════════╣
-║ 1 > {0} 3 > {2}║
-║ 2 > {1} 4 > {3}║
+║ 1 > {0}    6 > {5}║
+║ 2 > {1}    7 > {6}║
+║ 3 > {3}    8 > {7}║
+║ 4 > {3}    9 > {8}║
+║ 5 > {4}    10 > {9}║
 ║ 0 > Salir                                                           ║
 ╚═════════════════════════════════════════════════════════════════════╝
 '''
 )
 
+# Change Pokemon Menu (Option 2)
 change_pokemon_menu = Menu('change_pokemon_menu', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                           CAMBIAR POKÉMON                           ║
 ╠═════════════════════════════════════════════════════════════════════╣
-║ 1 > {0} 3 > {2} 5 > {4}║
-║ 2 > {1} 4 > {3} 6 > {5}║
+║ 1 > {0}║
+║ 2 > {1}║ 
+║ 3 > {2}║
+║ 4 > {3}║
+║ 5 > {4}║
+║ 6 > {5}║
 ║ 0 > Salir║
 ╚═════════════════════════════════════════════════════════════════════╝
 '''
 )
 
+# Use Item Menu (Option 3)
 use_item_menu = Menu('use_item_menu', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                             USAR OBJETO                             ║
 ╠═════════════════════════════════════════════════════════════════════╣
-║ 1 > {0} 3 > {2} 5 > Siguiente pagina║
-║ 2 > {1} 4 > {3}║
-║ 0 > Salir                                                           ║
+║ 1 > {0}║
+║ 2 > {1}║
+║ 3 > {2}║
+║ 4 > {3}║
+║ 5 > {4}║
+║ 6 > {5}║
+║ 7 > Siguiente Pag.║
+║ 0 > Salir║
 ╚═════════════════════════════════════════════════════════════════════╝
 '''
 )
 
+# Opponent Pokemon Menu (Option 4)
 opponent_pokemon_menu = Menu('opponent_pokemon_menu', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                         POKÉMON CONTRINCANTE                        ║
@@ -221,6 +195,7 @@ opponent_pokemon_menu = Menu('opponent_pokemon_menu', '''
 '''
 )
 
+# Opponent Pokemon Abilities Menu (Option 4.1)
 opponent_pokemon_abilities_menu = Menu('opponent_pokemon_abilities_menu', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                         POKÉMON CONTRINCANTE                        ║
@@ -231,6 +206,7 @@ opponent_pokemon_abilities_menu = Menu('opponent_pokemon_abilities_menu', '''
 '''
 )
 
+# Actual Pokemon Menu (Option 5)
 actual_pokemon_menu = Menu('actual_pokemon_menu', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                            POKÉMON ACTUAL                           ║
@@ -241,6 +217,7 @@ actual_pokemon_menu = Menu('actual_pokemon_menu', '''
 '''
 )
 
+# Actual Pokemon Abilities Menu (Option 5.1)
 actual_pokemon_abilities_menu = Menu('actual_pokemon_abilities_menu', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                   HABILIDADES DEL POKÉMON ACTUAL                    ║
@@ -255,27 +232,81 @@ actual_pokemon_abilities_menu = Menu('actual_pokemon_abilities_menu', '''
 '''
 )
 
-# Chat menu
+# Chat Menu
+
+chat_menu = Menu('chat_menu','''
+╔════════════════════════════════════════════════╗
+║                  MENÚ DE CHAT                  ║
+╠════════════════════════════════════════════════╣
+║ 1 > Mensajes Privados({0})║
+║ 2 > Perfil                                     ║
+║ 3 > Configuración                              ║
+║ 0 > Salir                                      ║
+╚════════════════════════════════════════════════╝
+'''
+)
+
+# Private messages (Option 1)
+private_messages_menu = Menu('private_messages_menu','''
+╔════════════════════════════════════════════════╗
+║               MÉNSAJES PRIVADOS                ║
+╠════════════════════════════════════════════════╣
+║ 1 > {0} 5 > {4}║
+║ 2 > {1} 6 > {5}║
+║ 3 > {2} 7 > {6}║
+║ 4 > {3} 8 > {7}║
+║ 9 > Siguiente Pag. 10 > Salir                  ║
+╚════════════════════════════════════════════════╝
+'''
+)
+# Porfile Menu (Option 2)
+porfile_menu = Menu('porfile_menu', '''
+╔════════════════════════════════════════════════╗
+║                     PERFIL                     ║
+╠════════════════════════════════════════════════╣
+║ Nombre: {0}║
+║ Edad: {1}║
+║ Genero: {2}║
+║ Pokémones: {3}║
+║ ID: {4}║
+╚════════════════════════════════════════════════╝
+'''
+)
+
+# Config Menu (Option 3)
+config_menu = Menu('config_menu', '''
+╔════════════════════════════════════════════════╗
+║                  Configuración                 ║
+╠════════════════════════════════════════════════╣
+║ 1 > Cambiar Nombre                             ║
+║ 2 > Cambiar Edad                               ║
+║ 3 > Cambiar Genero                             ║
+║ 4 > Bloquear a                                 ║
+║ ID: {4}║
+╚════════════════════════════════════════════════╝
+'''
+)
+
 
 # Options
 main_menu_options = {'1': battle_menu,
                      '2': chat_menu}
-battle_menu_options = {'0': main_menu,
+
+#Battle Menu Options
+battle_menu_options = {
                        '1': battle_menu_attack,
                        '2': change_pokemon_menu,
                        '3': use_item_menu,
                        '4': opponent_pokemon_menu,
                        '5': actual_pokemon_menu,
                        '6': 0}
-battle_menu_attack_options = {'0': battle_menu}
-change_pokemon_menu_option = {'0': battle_menu}
-use_item_menu_options = {'0': battle_menu}
-opponent_pokemon_menu_options = {'0': battle_menu,
-                                 '1': opponent_pokemon_abilities_menu}
-opponent_pokemon_abilities_menu_options = {'0': opponent_pokemon_menu}
-actual_pokemon_menu_options = {'0': battle_menu,
-                               '1': actual_pokemon_abilities_menu}
-actual_pokemon_abilities_menu_option = {'0': actual_pokemon_menu}
+opponent_pokemon_menu_options = {'1': opponent_pokemon_abilities_menu}
+actual_pokemon_menu_options = {'1': actual_pokemon_abilities_menu}
+
+#Chat Menu Options
+chat_menu_options = {'1': private_messages_menu,
+                     '2': porfile_menu,
+                     '3': config_menu}
 
 # Menu data
 n_games = 0
@@ -285,29 +316,31 @@ with open('./data.json', 'r') as json_file:
     n_games = data['n_games']
     actual_game = data['actual_game']
 
+all_games_data = []
 game_select_menu_data = []
-for a in os.listdir('./saves'):
-    with open(f'./saves/{a}', 'r') as json_file:
+
+for i in range(len(os.listdir('./saves'))):
+    with open(f'./saves/save{i+1}.json', 'r') as json_file:
         player_data = json.load(json_file)
         name = player_data['name']
-        id = str(player_data['id'])
-
+        age = player_data['age']
+        gender = player_data['gender']
+        pokemons = player_data['pokemon_caught']
+        id = player_data['id']
+    
+    all_games_data.append([name, age, gender, pokemons, id])
     game_select_menu_data.append(f'Nombre: {name} | ID: {id}')
 
+porfile_menu_data = all_games_data[actual_game-1]
+
 game_select_menu.set_data(game_select_menu_data)
+porfile_menu.set_data(porfile_menu_data)
 
-# Definir una lista de tuplas que contenga cada menú y sus opciones correspondientes
-menus_and_options = [
-    (main_menu, main_menu_options),
-    (battle_menu, battle_menu_options),
-    (battle_menu_attack, battle_menu_attack_options),
-    (change_pokemon_menu, change_pokemon_menu_option),
-    (use_item_menu, use_item_menu_options),
-    (opponent_pokemon_menu, opponent_pokemon_menu_options),
-    (opponent_pokemon_abilities_menu, opponent_pokemon_abilities_menu_options),
-    (actual_pokemon_menu, actual_pokemon_menu_options),
-    (actual_pokemon_abilities_menu, actual_pokemon_abilities_menu_option)
-]
+menu_options = {'main_menu': main_menu_options,
+                'battle_menu': battle_menu_options,
+                'opponent_pokemon_menu': opponent_pokemon_menu_options,
+                'actual_pokemon_menu': actual_pokemon_menu_options,
+                'chat_menu': chat_menu_options}
 
-for menu, options in menus_and_options:
-    menu.set_options(options)
+def set_menu_vals(menu):
+    menu.set_options(menu_options[menu.name])

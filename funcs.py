@@ -22,23 +22,26 @@ def print_str_effect(str_, default_time=0.025, end='\n'):
     print(end, end='')
 
 def object_to_dic(obj):
-    dic = vars(obj)
-    for key, value in dic.items():
-        if not isinstance(value, (str, int, float, bool, list, tuple, dict)) and value:
+    allowed_data = (str, int, float, bool, list, tuple)
+    
+    if not isinstance(obj, allowed_data) and obj:
+        dic = vars(obj) if not isinstance(obj, dict) else obj
+        for key, value in dic.items():
             dic[key] = object_to_dic(value)
+    
+        return dic
 
-    return dic
+    return obj
 
 def save_data(player, n_game):
     player_data = {}
 
     for attr_name, attr_value in vars(player).items():
-        if isinstance(attr_value, (str, int, float, bool, list, tuple, dict)) or not attr_value:
+        if isinstance(attr_value, (str, int, float, bool, list, tuple, dict)) and not attr_value:
             player_data[attr_name] = attr_value
         else:
             player_data[attr_name] = object_to_dic(attr_value)
-    
-    print(player_data)
+
     with open(f'./saves/save{n_game}.json', 'w') as json_file:
         json.dump(player_data, json_file, indent=4)
 

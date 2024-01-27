@@ -18,10 +18,11 @@ def main():
         player.n_game = game_option
 
         funcs.save_data(player, game_option)
-    
+
     player.actual_menu = main_menu
+    player.menu_history.append(main_menu)
     while True:
-        player.actual_menu.run_menu()
+        player.actual_menu.run_menu(player)
 
 main_menu_options = {'1': battle_menu,
                      '2': chat_menu}

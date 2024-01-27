@@ -11,6 +11,7 @@ class Player:
         self.n_game = 1
 
         self.actual_menu: object = None
+        self.menu_history = []
 
         self.init_pokemon: object = None
 
