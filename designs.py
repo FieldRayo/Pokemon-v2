@@ -32,7 +32,7 @@ class Menu:
             player.menu_history.pop()
 
         if not self.static_menu and option != '0':
-            set_menu_vals(self)
+            load_menu_options(self)
             player.menu_history.append(self.menu_options[option])
         elif option != '0':
             return option
@@ -73,22 +73,6 @@ class Menu:
     
         self.design = menu
 
-# Map
-
-map_menu = '''
-############################################################
-#                                                          #
-#  🏠                                                      #
-#                                                          #
-#                                                          #
-#                                                          #
-#                                                          #
-#                                                          #
-#                                                          #
-#                                                          #
-#                                                          #
-############################################################
-'''
 
 # Menu
 game_select_menu = Menu('game_select_menu', '''
@@ -287,10 +271,45 @@ config_menu = Menu('config_menu', '''
 '''
 )
 
+# Map menu
+
+map_menu = Menu('map_menu', '''
+############################################################
+#                                                          #
+#  🏠                                                      #
+#                                                          #
+#                                                          #
+#                                                          #
+#                                                          #
+#                                                          #
+#                                                          #
+#                                                          #
+#                                                          #
+############################################################
+'''
+)
+
+# Store
+
+store_menu = Menu('store_menu', '''
+╔════════════════════════════════════════════════╗
+║                     Tienda                     ║
+╠════════════════════════════════════════════════╣
+║ 1 > {0}║
+║ 2 > {1}║
+║ 3 > {2}║
+║ 4 > {3}║
+║ 5 > Siguiente Pag                              ║
+║ 0 > Slir                                       ║
+╚════════════════════════════════════════════════╝
+'''
+)
 
 # Options
 main_menu_options = {'1': battle_menu,
-                     '2': chat_menu}
+                     '2': chat_menu,
+                     '3': map_menu,
+                     '4': store_menu}
 
 #Battle Menu Options
 battle_menu_options = {
@@ -309,32 +328,40 @@ chat_menu_options = {'1': private_messages_menu,
                      '3': config_menu}
 
 # Menu data
-n_games = 0
-actual_game = 0
-with open('./data.json', 'r') as json_file:
-    data = json.load(json_file)
-    n_games = data['n_games']
+def load_menu_data():
+    data = {}
+    player_data = {}
+
+    all_games_data = []
+    game_select_menu_data = []
+
+    list_dir = os.listdir('./saves')
+
+    with open('./data.json', 'r') as json_file:
+        data = json.load(json_file)
+    
     actual_game = data['actual_game']
 
-all_games_data = []
-game_select_menu_data = []
-
-for i in range(len(os.listdir('./saves'))):
-    with open(f'./saves/save{i+1}.json', 'r') as json_file:
-        player_data = json.load(json_file)
+    for i in range(len(list_dir)):
+        with open(f'./saves/save{i+1}.json', 'r') as json_file:
+            player_data = json.load(json_file)
+        
         name = player_data['name']
         age = player_data['age']
         gender = player_data['gender']
         pokemons = player_data['pokemon_caught']
         id = player_data['id']
-    
-    all_games_data.append([name, age, gender, pokemons, id])
-    game_select_menu_data.append(f'Nombre: {name} | ID: {id}')
 
-porfile_menu_data = all_games_data[actual_game-1]
+        all_games_data.append([name, age, gender, pokemons, id])
+        game_select_menu_data.append(f'Nombre: {name} | ID: {id}')
 
-game_select_menu.set_data(game_select_menu_data)
-porfile_menu.set_data(porfile_menu_data)
+    if len(list_dir):
+        porfile_menu_data = all_games_data[actual_game-1]
+
+        game_select_menu.set_data(game_select_menu_data)
+        porfile_menu.set_data(porfile_menu_data)
+
+load_menu_data()
 
 menu_options = {'main_menu': main_menu_options,
                 'battle_menu': battle_menu_options,
@@ -342,5 +369,5 @@ menu_options = {'main_menu': main_menu_options,
                 'actual_pokemon_menu': actual_pokemon_menu_options,
                 'chat_menu': chat_menu_options}
 
-def set_menu_vals(menu):
+def load_menu_options(menu):
     menu.set_options(menu_options[menu.name])

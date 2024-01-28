@@ -1,5 +1,6 @@
 import time, os
-from init import init_pokemon_data, Player, Pokemon
+from init import Player, Pokemon
+from pokemon import init_pokemon_data
 import designs
 import json
 

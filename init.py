@@ -7,26 +7,33 @@ class Player:
         self.name = name
         self.gender = gender
         self.age = age
-        self.id = random.randint(100000, 999999)
+        self.id = random.randint(10000000, 99999999)
+        self.money = 0
         self.n_game = 1
-
+        
+        # Menu
         self.actual_menu: object = None
         self.menu_history = []
-
+        
+        # Pokemon
         self.init_pokemon: object = None
+        self.principal_pokemon: object = None
 
         self.pokemon_caught = {}
         self.pokemon_team = {}
         
         self.pokemon_caught_data = {}
         self.pokemon_team_data = {}
-
+        
+        # Object
         self.objects = {}
         self.objects_data = {}
 
     def set_init_pokemon(self, init_pokemon):
-        if not self.init_pokemon and init_pokemon.name in init_pokemon_data:
+        if not self.init_pokemon and init_pokemon.isinit_pokemon:
             self.init_pokemon = init_pokemon
+
+        self.pokemon_caught.append(init_pokemon)
 
     def caught(pokemon):
         self.pokemon_caught[pokemon.name] = pokemon
@@ -54,12 +61,13 @@ class Player:
             self.objects_data[object_.name][attr_name] = attr_value
 
 class Pokemon:
-    def __init__(self, name, gender, type_):
+    def __init__(self, name, type_):
         self.name = name
-        self.gender = gender
+        self.gender = -1
 
         self.type_: Type = type_
         self.counter = []
+        self.isinit_pokemon = False
 
         self.xp = 0
         self.xp_need = 1
@@ -83,7 +91,7 @@ class Pokemon:
 
         self.mean = 0
 
-        self.skills = placaje
+        self.skills: object = None
         self.nature: object = None
     
     def get_init_stats(self):
@@ -96,7 +104,7 @@ class Pokemon:
         return self.xp
 
     def set_type(self, type_):
-        self.type = type_
+        self.type_ = type_
 
     def set_init_stats(self, args):
         self.iv_health = args[0]
@@ -108,11 +116,11 @@ class Pokemon:
         self.iv_mean = sum(args) / 5
 
     def set_standard_stats(self):
-        self.health = self.type.health * (self.level ** 1.5 + self.iv_health) // 10
-        self.damage = self.type.damage * (self.level ** 1.5 + self.iv_damage) // 10
-        self.defense = self.type.defense * (self.level ** 1.5 + self.iv_defense) // 10
-        self.speed = self.type.speed * (self.level ** 1.5 + self.iv_speed) // 10
-        self.precision = self.type.precision * (self.level * 1.5 + self.iv_precision) // 10
+        self.health = self.type_.health * (self.level ** 1.5 + self.iv_health) // 10
+        self.damage = self.type_.damage * (self.level ** 1.5 + self.iv_damage) // 10
+        self.defense = self.type_.defense * (self.level ** 1.5 + self.iv_defense) // 10
+        self.speed = self.type_.speed * (self.level ** 1.5 + self.iv_speed) // 10
+        self.precision = self.type_.precision * (self.level * 1.5 + self.iv_precision) // 10
 
     def set_stats(self, args):
         self.health = args[0]
@@ -176,32 +184,3 @@ class Type:
 
     def set_counter(self, counter):
         self.counter = counter
-
-
-# Skills
-placaje = Skill('Placaje', 3, None)
-skills_data = {'Placaje': placaje}
-
-# Types - fire
-fire = Type('fire')
-fire.set_stats([1.5, 2, 0.8, 1.2, 0.6])
-fire.set_counter(['water', 'stone', 'electric', 'ice'])
-
-# Pokemon - charmander
-charmander = Pokemon('Charmander', 0, fire)
-charmander.set_type(fire)
-charmander.set_counter(fire)
-
-charmander.set_init_stats(random.sample(range(0, 100), 5))
-charmander.set_standard_stats()
-
-charmander.xp_need = 1
-
-# Pokemon - Data
-init_pokemon_data = {'Charmander': charmander,
-                     'Bulbasaur': 1,
-                     'Squirtle': 1}
-pokemon_data = {'Charmander': charmander,
-                'Bulbasaur': 1,
-                'Squirtle': 1}
-
