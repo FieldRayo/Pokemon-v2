@@ -1,0 +1,19 @@
+{
+  "game_select_menu": ["name", "id"],
+
+  "battle_menu_attack": ["principal_pokemon.skills"],
+  "change_pokemon_menu": ["pokemon_team.name"],
+  "use_item_menu": ["objects", "objects.price"],
+  "actual_pokemon_menu": [
+    "principal_pokemon.level",
+    "principal_pokemon.damage",
+    "principal_pokemon.health",
+    "principal_pokemon.defense",
+    "principal_pokemon.speed",
+    "principal_pokemon.name"
+  ],
+  "actual_pokemon_abilities_menu": ["principal_pokemon.skills"],
+
+  "chat_menu": ["n_messages"],
+  "private_messages_menu": ["friends"]
+}

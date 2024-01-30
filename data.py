@@ -15,3 +15,4 @@ def update_data(actual_game):
     with open('./data.json', 'w') as json_file:
         json.dump(data, json_file, indent=4)
 
+

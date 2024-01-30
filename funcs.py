@@ -1,5 +1,4 @@
 import time, os
-from init import Player, Pokemon
 from pokemon import init_pokemon_data
 import designs
 import json
@@ -22,62 +21,49 @@ def print_str_effect(str_, default_time=0.025, end='\n'):
 
     print(end, end='')
 
-def object_to_dic(obj):
-    allowed_data = (str, int, float, bool, list, tuple)
+def get_dialogue(name_dialogue):
+    dialogue_data = {}
+
+    with open('./resources/dialogues.json', 'r') as json_file:
+        dialogue_data = json.load(json_file)
+
+    return dialogue_data[name_dialogue]
+
+def run_dialogue(name_dialogue):
+    dialogue_data = get_dialogue(name_dialogue)
+    args = {}
     
-    if not isinstance(obj, allowed_data) and obj:
-        dic = vars(obj) if not isinstance(obj, dict) else obj
-        for key, value in dic.items():
-            dic[key] = object_to_dic(value)
-    
-        return dic
+    for key, value in dialogue_data.items():
+        requeriments = value['requeriments']
+        is_input = value['input']
 
-    return obj
+        requeriments = [args[x] for x in requeriments]
 
-def save_data(player, n_game):
-    player_data = {}
-
-    for attr_name, attr_value in vars(player).items():
-        if isinstance(attr_value, (str, int, float, bool, list, tuple, dict)) and not attr_value:
-            player_data[attr_name] = attr_value
+        if requeriments:
+            print_str_effect(value['dialogue'].format(*requeriments))
         else:
-            player_data[attr_name] = object_to_dic(attr_value)
+            print_str_effect(value['dialogue'])
+        
+        if is_input:
+            input_ = input('>>> ')
+            input_ = eval(value['type_input'])(input_)
 
-    with open(f'./saves/save{n_game}.json', 'w') as json_file:
-        json.dump(player_data, json_file, indent=4)
+            args[key] = input_
 
-def load_data(n_game):
-    with open(f'./saves/save{n_game}.json', 'r') as json_file:
-        player_data = json.load(json_file)
-
-    player = Player(0, 0, 0)
-    
-    for attr_name in vars(player):
-        try:
-            setattr(player, attr_name, player_data[attr_name])
-        except KeyError:
-            continue
-    
-    return player
+    return args.values()
 
 def new_player():
+    from init import Player
+
     exit_option = ''
+    dialogue = get_dialogue('introduction')
+    args = ()
 
     while exit_option.lower() != 's':
         os.system('clear')
+        args = run_dialogue('introduction')
+        name, gender, age, exit_option = args
 
-        print_str_effect('Bienvenido!,|15| dime,|15| como te llamas?: ')
-        name = input('>>> ')
-        
-        print_str_effect(f'Excelente nombre {name}!|10| ahora dime tu genero\n1: Chico\n2: Chica')
-        gender = int(input('>>> ')) - 1
-        
-        print_str_effect(f'Para finalizar|15| ¿porque no me dices tu edad?')
-        age = int(input('>>> '))
-
-        exit_option = input('Confirmas tus datos(S/N)? : ')
-
-    print_str_effect('Perfecto, ahora podras empezar a jugar!')
     player = Player(name, gender, age)
     
     time.sleep(1.5)
@@ -102,7 +88,6 @@ def new_player():
 
     return player
 
-
 def chose_pokemon(player):
     pokemon = 0
     pokemon_option = 0
@@ -111,42 +96,22 @@ def chose_pokemon(player):
     pokemon_options = ['Charmander', 'Bulbasaur', 'Squirtle']
     
     while not pokemon and exit_option.lower() != 's':
-        print_str_effect('Elije un pokemon entre las siguientes opciones: ')
-        print('''
-        1 -> Charmander
-        2 -> Bulbasaur
-        3 -> Squirtle
-              ''')
-        pokemon_option = int(input('>>> '))
-
-        print_str_effect('Estas segur{0} de tu eleccion(S/N)?'.format('a' if player.gender else 'o'))
-        exit_option = input('>>> ')
+        pokemon_option, exit_option = run_dialogue('chose_pokemon')
 
         pokemon = init_pokemon_data.get(pokemon_options[pokemon_option-1], 0)
-
+    
     player.set_init_pokemon(pokemon)
 
 def tutorial(player):
-    continue_option = ''
+    run_dialogue('tutorial')
     
-    print_str_effect('Bienvenido a este mundo de pokemon,|15| antes de iniciar con tu aventura'
-                     'te dare las instrucciones para que puedas tener una correcta experiencia|15|'
-                     '\n¿estas listo(S/N)?')
-    continue_option = input('>>> ')
-        
-    while continue_option.lower() != 's':
-        print_str_effect('.|65|.|65|.|65| ¿listo(S/N)?')
-        continue_option = input('>>> ')
-    
-    print_str_effect('A continuacion tendras tu primera batalla pokémon!|20| ¿No es emocionante?|20|'
-                     '¡Claro que lo es!|15|, Tu primera batalla sera contra "Yalo"|15| un pokemon'
-                     ' de tipo electrico')
-    
+def pokemon_fight(player, pokemon):
     option = ''
 
-    player.actual_menu = designs.battle_menu
-    while True:
-        print(player.actual_menu)
-        option = input('>>> ')
+    print_str_effect(f'¡Te has encontrado un {pokemon.name}({pokemon.level})! |15|'
+                      '¿Quieres luchar contra el(S/N)?')
+    option = input('>>> ')
 
-
+    if option.lower() != 's': return
+        
+    designs.battle_menu.run_menu(player)

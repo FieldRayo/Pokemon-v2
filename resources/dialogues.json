@@ -1,0 +1,70 @@
+{
+  "introduction": {
+
+    "name": {
+      "dialogue": "¡Bienvenido!|15| ¿Puedes decirme como te llamas?",
+      "requeriments": [],
+      "input": true,
+      "type_input": "str"
+    },
+
+    "gender": {
+      "dialogue": "Excelente nombre {0}!|10| Ahora,|10| ¿me puedes mencionar tu genero?\n0 --> Chico\n1 --> Chica",
+      "requeriments": ["name"],
+      "input": true,
+      "type_input": "int"
+    },
+
+    "age": {
+      "dialogue": "Para finalizar,|15| ¿porque no me dices tu edad?",
+      "requeriments": [],
+      "input": true,
+      "type_input": "int"
+    },
+
+    "exit_option": {
+      "dialogue": "¿Confirmas tus datos(S/N)?",
+      "requeriments": [],
+      "input": true,
+      "type_input": "str"
+    },
+
+    "finish": {
+      "dialogue": "Perfecto, ahora podras empezar a jugar!",
+      "requeriments": [],
+      "input": false
+    }
+  },
+
+  "chose_pokemon":{
+
+    "pokemon_option":{
+      "dialogue": "Elije un pokemon entre las siguientes opciones:|5|\n1 -> Charmander|5|\n2 -> Bulbasaur|5|\n3 -> Squirtle",
+      "requeriments": [],
+      "input": true,
+      "type_input": "int"
+    },
+
+    "exit_option":{
+      "dialogue": "¿Estas segur@ de tu eleccion(S/N)?",
+      "requeriments": [],
+      "input": true,
+      "type_input": "str"
+    }
+  },
+
+  "tutorial": {
+
+    "introduction1":{
+      "dialogue": "Bienvenido a este mundo de pokemon,|15| antes de iniciar con tu aventura\nte dare las instrucciones para que puedas tener una correcta experiencia|15|",
+      "requeriments": [],
+      "input": false
+    },
+
+    "introduction2":{
+      "dialogue": "A continuacion tendras tu primera batalla pokémon!|20| ¿No es emocionante?|20|\n¡Claro que lo es!|15|, Tu primera batalla sera contra 'Yalo'|15| un pokemon de tipo electrico",
+      "requeriments": [],
+      "input": false
+    }
+  }
+}

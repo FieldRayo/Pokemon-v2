@@ -23,6 +23,7 @@ water.set_counter(['plant', 'electric', 'stone', 'fighter'])
 charmander = Pokemon('Charmander', fire)
 charmander.set_type(fire)
 charmander.set_counter(fire)
+charmander.set_skill(placaje)
 
 charmander.set_init_stats(random.sample(range(0, 100), 5))
 charmander.set_standard_stats()
@@ -34,6 +35,7 @@ charmander.isinit_pokemon = True
 bulbasaur = Pokemon('Bulbasaur', plant)
 bulbasaur.set_type(plant)
 bulbasaur.set_counter(plant)
+bulbasaur.set_skill(placaje)
 
 bulbasaur.set_init_stats(random.sample(range(0, 100), 5))
 bulbasaur.set_standard_stats()
@@ -45,6 +47,7 @@ bulbasaur.isinit_pokemon = True
 squirtle = Pokemon('Squirtle', water)
 squirtle.set_type(water)
 squirtle.set_counter(water)
+squirtle.set_skill(placaje)
 
 squirtle.set_init_stats(random.sample(range(0, 100), 5))
 squirtle.set_standard_stats()
