@@ -178,7 +178,7 @@ porfile_menu = Menu('porfile_menu', '''
 ║ Nombre: {0}║
 ║ Edad: {1}║
 ║ Genero: {2}║
-║ Pokémones: {3}║
+║ Pokémon Principal: {3}║
 ║ ID: {4}║
 ║ 0 > Salir                                      ║
 ╚════════════════════════════════════════════════╝
@@ -318,9 +318,11 @@ def get_menu_data(player, menu):
         for game in all_games_data:
             for attr in requeriments:
                 attr_game.append(str(game[attr]))
-
+            
             attr_game = ' '.join(attr_game)
             attributes.append(attr_game)
+
+            attr_game = []
 
         return flatten_list(attributes)
 
@@ -330,19 +332,18 @@ def get_menu_data(player, menu):
         attr = attr.split('.')
         for i in range(len(attr)):
             if isinstance(attribute, list):
-                attribute = [x[attr[i]] for x in attribute]
+                attribute = [getattr(x, attr[i]) for x in attribute]
                 continue
             
             attribute = getattr(attribute, attr[i])
-
+            
         if isinstance(attribute, dict):
             attribute = list(attribute)
         
-        if attribute:
-            attributes.append(attribute)
+        attributes.append(attribute)
         
         attribute = player
-
+    
     return flatten_list(attributes)
 
 def flatten_list(lst):

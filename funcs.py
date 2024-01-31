@@ -115,3 +115,4 @@ def pokemon_fight(player, pokemon):
     if option.lower() != 's': return
         
     designs.battle_menu.run_menu(player)
+

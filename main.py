@@ -5,35 +5,41 @@ import os, time
 import json
 import threading
 
-# Arregla lo de los diccionarios!!!! porfavor
-
 player: object = None
-game_option = 0
-saves = []
+selected_game = 0
 
-for i in range(len(os.listdir('./saves'))):
-    with open(f'./saves/save{i+1}.json', 'r') as json_file:
-        saves.append(json.load(json_file))
+def get_saves():
+    saves = []
+
+    for i in range(len(os.listdir('./saves'))):
+        with open(f'./saves/save{i+1}.json', 'r') as json_file:
+            saves.append(json.load(json_file))
+    
+    return saves
+
+saves = get_saves()
 
 def main():
     global player
-    global game_option
+    global selected_game
+    global saves
 
     option = ''
     tutorial_option = ''
     
-    # Load game
-    game_option = int(game_select_menu.run_menu())
+    selected_game = int(game_select_menu.run_menu())
+
     player = init.Player(0, 0, 0)
 
-    if os.path.exists(f'./saves/save{game_option}.json'):
-        player.load_data(saves[game_option-1])
+    if os.path.exists(f'./saves/save{selected_game}.json'):
+           player.load(saves[selected_game-1])
     else:
         player = funcs.new_player()
-        player.n_game = int(game_option)
-        
-        player.save_data()
-        
+        player.n_game = int(selected_game)
+
+        player.save()
+        saves = get_saves()
+
     player.actual_menu = main_menu
     player.menu_history.append(main_menu)
 
@@ -44,8 +50,10 @@ def update():
     time_elapsed = 0
 
     while True:
-        if player and game_option:
-            data.update_data(game_option)
+        if os.path.exists(f'./saves/save{selected_game}.json'):
+            data.update_data(saves[selected_game-1], saves)
+        elif not saves:
+            data.update_data()
             
         time.sleep(1/FPS)
         time_elapsed += 1/FPS
@@ -55,5 +63,5 @@ thread_update.daemon = True
 thread_update.start()
 
 if __name__ == '__main__':
-    data.update_data(0)
+    data.update_data()
     main()

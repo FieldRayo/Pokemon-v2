@@ -1,6 +1,4 @@
-import random
-import math
-import time
+import random, math, time
 import json, os
 
 class Player:
@@ -18,7 +16,7 @@ class Player:
 
         #Menu - Chat
         self.messages = {}
-        self.n_messages = sum([len(value) for key, value in self.messages.items()]) + 1
+        self.n_messages = sum([len(value) for key, value in self.messages.items()])
         self.friends = []
         
         # Pokemon
@@ -31,15 +29,13 @@ class Player:
         # Object
         self.objects = []
     
-    def save_data(self):
+    def save(self):
         player_data = to_dict(self)
-        
+             
         with open(f'./saves/save{self.n_game}.json', 'w') as json_file:
             json.dump(player_data, json_file, indent=4)
-
-        self.load_data(player_data)
                 
-    def load_data(self, save_file):
+    def load(self, save_file):
         save_file = to_object(save_file)
 
         for key in vars(self):
@@ -65,7 +61,7 @@ class Player:
 
     def add_object(self, object_):
         if object.name in self.objects:
-            self.objects[objects.name].amount += 1
+            self.objects[self.objects.name].amount += 1
             return
 
         self.objects[object_.name] = object_
@@ -122,7 +118,7 @@ class Menu:
     def print_data(self):
         menu_data = self.menu_data
         size_data = self.size_data
-        
+                
         if not menu_data: menu_data = []
 
         menu_data += ['?'] * (size_data - len(menu_data))
@@ -287,20 +283,22 @@ class Type:
 
 
 import inspect
+import copy
 
-def to_dict(obj):
+def to_dict(object_):
     denied_data = (str, int, float, bool, list, tuple)
-    
+    obj = copy.deepcopy(object_)
+
     if not isinstance(obj, denied_data) and obj:
         if isinstance(obj, dict):
             dict_ = obj
         else:
             dict_ = vars(obj)
             dict_['object_name'] = type(obj).__name__
-
+        
         for key, value in dict_.items():
             dict_[key] = to_dict(value)
-    
+
         return dict_
     
     if isinstance(obj, list):
@@ -309,8 +307,10 @@ def to_dict(obj):
 
     return obj
 
-def to_object(dict_):
-    if 'object_name' not in dict_:
+def to_object(dictionary):
+    dict_ = copy.deepcopy(dictionary)
+
+    if not isinstance(dict_, dict) or 'object_name' not in dict_:
         return dict_
 
     obj = object_map[dict_['object_name']]
@@ -323,15 +323,16 @@ def to_object(dict_):
 
     for key, value in dict_.items():
         if isinstance(dict_[key], list):
-            setattr(obj, key, [to_object(x) for x in dict_[key]])
-        if isinstance(dict_[key], dict):
+            setattr(obj, key, [to_object(x) for x in dict_[key]])        
+        elif isinstance(dict_[key], dict):
             setattr(obj, key, to_object(dict_[key]))
-
         else:
             setattr(obj, key, value)
 
     return obj
 
+def on_key(key):
+    return key.name
 
 object_map = {'Player': Player,
               'Menu': Menu,

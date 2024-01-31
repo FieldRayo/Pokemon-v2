@@ -15,5 +15,6 @@
   "actual_pokemon_abilities_menu": ["principal_pokemon.skills"],
 
   "chat_menu": ["n_messages"],
-  "private_messages_menu": ["friends"]
+  "private_messages_menu": ["friends"],
+  "porfile_menu": ["name", "age", "gender", "principal_pokemon.name", "id"]
 }
