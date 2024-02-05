@@ -1,4 +1,4 @@
-from init import Menu, to_object
+from init import Menu
 import json, os
 
 # Menu
@@ -28,7 +28,6 @@ main_menu = Menu('main_menu', '''
 ║ 5 > Pokedex      ║
 ║ 6 > Bolsa        ║
 ║ 7 > Ajustes      ║
-║ 8 > Guardar      ║
 ╚══════════════════╝
 '''
 )
@@ -43,6 +42,7 @@ battle_menu = Menu('battle_menu', '''
 ║  2 > Cambiar Pokémon  4 > Pokémon Contrincante  6 > Huir            ║
 ║  0 > Salir                                                          ║
 ╚═════════════════════════════════════════════════════════════════════╝
+{0} {1}
 '''
 )
 
@@ -52,14 +52,14 @@ battle_menu_attack = Menu('battle_menu_attack', '''
 ╔═════════════════════════════════════════════════════════════════════╗
 ║                           MENÚ DE ATAQUE                            ║
 ╠═════════════════════════════════════════════════════════════════════╣
-║ 1 > {0}    6 > {5}║
-║ 2 > {1}    7 > {6}║
-║ 3 > {3}    8 > {7}║
-║ 4 > {3}    9 > {8}║
-║ 5 > {4}    10 > {9}║
+║ 1 > {0}║
+║ 2 > {1}║
+║ 3 > {3}║
+║ 4 > {3}║
+║ 5 > {4}║
 ║ 0 > Salir                                                           ║
 ╚═════════════════════════════════════════════════════════════════════╝
-'''
+''', static_menu=True
 )
 
 # Change Pokemon Menu (Option 2)
@@ -75,7 +75,7 @@ change_pokemon_menu = Menu('change_pokemon_menu', '''
 ║ 6 > {5}║
 ║ 0 > Salir║
 ╚═════════════════════════════════════════════════════════════════════╝
-'''
+''', static_menu=True
 )
 
 # Use Item Menu (Option 3)
@@ -92,7 +92,7 @@ use_item_menu = Menu('use_item_menu', '''
 ║ 7 > Siguiente Pag.║
 ║ 0 > Salir║
 ╚═════════════════════════════════════════════════════════════════════╝
-'''
+''', static_menu=True
 )
 
 # Opponent Pokemon Menu (Option 4)
@@ -171,7 +171,7 @@ private_messages_menu = Menu('private_messages_menu','''
 '''
 )
 # Porfile Menu (Option 2)
-porfile_menu = Menu('porfile_menu', '''
+profile_menu = Menu('porfile_menu', '''
 ╔════════════════════════════════════════════════╗
 ║                     PERFIL                     ║
 ╠════════════════════════════════════════════════╣
@@ -240,117 +240,55 @@ menu_map = {'main_menu': main_menu,
             'chat_menu': chat_menu
             }
 
-# Menu Options
-main_menu_options = {'1': battle_menu,
-                     '2': chat_menu,
-                     '3': map_menu,
-                     '4': store_menu}
+menu_opions = {}
 
-#Battle Menu Options
-battle_menu_options = {
-                       '1': battle_menu_attack,
-                       '2': change_pokemon_menu,
-                       '3': use_item_menu,
-                       '4': opponent_pokemon_menu,
-                       '5': actual_pokemon_menu,
-                       '6': 0}
-opponent_pokemon_menu_options = {'1': opponent_pokemon_abilities_menu}
-actual_pokemon_menu_options = {'1': actual_pokemon_abilities_menu}
+from functools import partial
 
-#Chat Menu Options
-chat_menu_options = {'1': private_messages_menu,
-                     '2': porfile_menu,
-                     '3': config_menu}
+def load_menu(player):
+    global menu_opions
 
-menu_options = {'main_menu': main_menu_options,
-                'battle_menu': battle_menu_options,
-                'opponent_pokemon_menu': opponent_pokemon_menu_options,
-                'actual_pokemon_menu': actual_pokemon_menu_options,
-                'chat_menu': chat_menu_options
-                }
+    # Main Menu Options
+    main_menu_options = {
+        0: partial(battle_menu.open, player),
+        1: partial(chat_menu.open, player),
+        2: partial(map_menu.open, player),
+        3: partial(store_menu.open, player)
+    }
 
-for menu in menu_map.values():
-    menu.set_options(menu_options[menu.name])
+    # Battle Menu Options
+    battle_menu_options = {
+        0: partial(battle_menu_attack.open, player),
+        1: partial(change_pokemon_menu.open, player),
+        2: partial(use_item_menu.open, player),
+        3: partial(opponent_pokemon_menu.open, player),
+        4: partial(actual_pokemon_menu.open, player),
+        5: 0
+    }
 
+    # Opponent Pokemon Menu Options
+    opponent_pokemon_menu_options = {
+        0: partial(opponent_pokemon_abilities_menu.open, player)
+    }
 
-# Menu data
-data = {}
-player_data = {}
+    # Actual Pokemon Menu Options
+    actual_pokemon_menu_options = {
+        0: partial(actual_pokemon_abilities_menu.open, player)
+    }
 
-all_games_data = []
-game_select_menu_data = []
+    # Chat Menu Options
+    chat_menu_options = {
+        0: partial(private_messages_menu.open, player),
+        1: partial(profile_menu.open, player),
+        2: partial(config_menu.open, player)
+    }
 
-def load_all_data():
-    list_dir = os.listdir('./saves')
+    menu_options = {'main_menu': main_menu_options,
+                    'battle_menu': battle_menu_options,
+                    'opponent_pokemon_menu': opponent_pokemon_menu_options,
+                    'actual_pokemon_menu': actual_pokemon_menu_options,
+                    'chat_menu': chat_menu_options
+                    }
 
-    with open('./data.json', 'r') as json_file:
-        data = json.load(json_file)
-    
-    actual_game = data['actual_game']
+    for menu in menu_map.values():
+        menu.set_options(menu_options[menu.name])
 
-    for i in range(len(list_dir)):
-        with open(f'./saves/save{i+1}.json', 'r') as json_file:
-            player_data = json.load(json_file)
-        
-        all_games_data.append(player_data)
-
-    return all_games_data
-
-
-def load_menu_options(menu):
-    menu.set_options(menu_options[menu.name])
-
-def get_menu_data(player, menu):
-    menu_requeriments = {}
-    with open('./menu_requeriments.json', 'r') as json_file:
-        menu_requeriments = json.load(json_file)
-        
-    key = menu.name
-    if key not in menu_requeriments: return
-    requeriments = menu_requeriments[key]
-    
-    attributes = []
-
-    if not player:
-        attr_game = []
-
-        all_games_data = load_all_data()
-        for game in all_games_data:
-            for attr in requeriments:
-                attr_game.append(str(game[attr]))
-            
-            attr_game = ' '.join(attr_game)
-            attributes.append(attr_game)
-
-            attr_game = []
-
-        return flatten_list(attributes)
-
-    attribute = player
-    
-    for attr in requeriments:
-        attr = attr.split('.')
-        for i in range(len(attr)):
-            if isinstance(attribute, list):
-                attribute = [getattr(x, attr[i]) for x in attribute]
-                continue
-            
-            attribute = getattr(attribute, attr[i])
-            
-        if isinstance(attribute, dict):
-            attribute = list(attribute)
-        
-        attributes.append(attribute)
-        
-        attribute = player
-    
-    return flatten_list(attributes)
-
-def flatten_list(lst):
-    resultado = []
-    for elemento in lst:
-        if isinstance(elemento, list):
-            resultado.extend(flatten_list(elemento))
-        else:
-            resultado.append(elemento)
-    return resultado

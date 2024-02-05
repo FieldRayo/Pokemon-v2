@@ -22,6 +22,7 @@ class Player:
         # Pokemon
         self.init_pokemon: object = None
         self.principal_pokemon: object = None
+        self.opponent_pokemon: object = None
 
         self.pokemon_caught = []
         self.pokemon_team = []
@@ -30,12 +31,14 @@ class Player:
         self.objects = []
     
     def save(self):
+        from funcs import to_dict
         player_data = to_dict(self)
              
         with open(f'./saves/save{self.n_game}.json', 'w') as json_file:
             json.dump(player_data, json_file, indent=4)
                 
     def load(self, save_file):
+        from funcs import to_object
         save_file = to_object(save_file)
 
         for key in vars(self):
@@ -60,16 +63,14 @@ class Player:
         self.pokemon_team.append(pokemon)
 
     def add_object(self, object_):
-        if object.name in self.objects:
+        if object in self.objects:
             self.objects[self.objects.name].amount += 1
             return
 
-        self.objects[object_.name] = object_
-        self.objects_data[object_.name] = {}
+        self.objects.append(object_)
 
-        for attr_name, attr_value in vars(object_).items():
-            self.objects_data[object_.name][attr_name] = attr_value
-
+    def attack_pokemon(self, opponent_pokemon, attack):
+        opponent_pokemon.attack_received(opponent_pokemon, attack)
 
 class Menu:
     def __init__(self, name, design, static_menu=False):
@@ -78,7 +79,7 @@ class Menu:
 
         self.menu_options = {}
         self.menu_data = []
-
+        
         self.size_data = design.count('{')
         self.static_menu = static_menu
 
@@ -88,45 +89,44 @@ class Menu:
     def set_data(self, data):
         self.menu_data = data
 
-    def run_menu(self, player=0):
-        from designs import load_menu_options, get_menu_data
     
-        option = 0
-    
-        data = get_menu_data(player, self)
-        self.set_data(data)
+    def open(self, player=None):
+        from funcs import get_menu_data
         
-        self.print_data()
+        option_action = None
+        data = get_menu_data(player, self)
 
-        self.menu_ajust()
-
-        print(self.design)
-        option = input('>>> ')
+        self.set_data(data)
+        design = self.load_design(data)
+        design = self.menu_ajust(design)
+        
+        print(design)
+        option = int(input('>>> '))
         os.system('clear')
-
-        if option == '0' and len(player.menu_history)-1:
-            player.menu_history.pop()
-        if not self.static_menu and option != '0':
-            load_menu_options(self)
-            player.menu_history.append(self.menu_options[option])
-        elif option != '0':
+        
+        if not player:
             return option
+        
+        menu_history = player.menu_history
+        menu_history = list(set(menu_history))
+        
+        menu_history.append(self)
+        
+        if not option and len(menu_history)-1:
+            menu_history.pop()
+            menu_history[-1].open()
+        elif option:
+            menu_history[-1].menu_options[option-1]()
 
-        player.actual_menu = player.menu_history[-1]
-        player.actual_menu.run_menu(player)
-    
-    def print_data(self):
-        menu_data = self.menu_data
+    def load_design(self, menu_data):
         size_data = self.size_data
                 
         if not menu_data: menu_data = []
 
         menu_data += ['?'] * (size_data - len(menu_data))
-        self.design = self.design.format(*menu_data)
+        return self.design.format(*menu_data)
     
-    def menu_ajust(self):
-        menu = self.design
-
+    def menu_ajust(self, menu):
         side_count = 0
         size_menu = 0
     
@@ -148,7 +148,7 @@ class Menu:
                     
             i += 1
     
-        self.design = menu
+        return menu
 
 
 class Pokemon:
@@ -159,6 +159,8 @@ class Pokemon:
         self.type_: Type = type_
         self.counter = []
         self.isinit_pokemon = False
+        self.is_down = False
+        self.health_bar = f'{self.name} |████████████████████| 100%'
 
         self.xp = 0
         self.xp_need = 1
@@ -174,6 +176,8 @@ class Pokemon:
         self.iv_mean = 0
 
         # Stats
+        self.max_health = 0
+
         self.health = 0
         self.damage = 0
         self.defense = 0
@@ -182,7 +186,7 @@ class Pokemon:
 
         self.mean = 0
 
-        self.skills: dict = {}
+        self.skills = []
         self.nature: object = None
     
     def get_init_stats(self):
@@ -195,7 +199,7 @@ class Pokemon:
         return self.xp
     
     def set_skill(self, skill):
-        self.skills[skill.name] = skill
+        self.skills.append(skill)
 
     def set_type(self, type_):
         self.type_ = type_
@@ -210,11 +214,13 @@ class Pokemon:
         self.iv_mean = sum(args) / 5
 
     def set_standard_stats(self):
-        self.health = self.type_.health * (self.level ** 1.5 + self.iv_health) // 10
-        self.damage = self.type_.damage * (self.level ** 1.5 + self.iv_damage) // 10
-        self.defense = self.type_.defense * (self.level ** 1.5 + self.iv_defense) // 10
-        self.speed = self.type_.speed * (self.level ** 1.5 + self.iv_speed) // 10
-        self.precision = self.type_.precision * (self.level * 1.5 + self.iv_precision) // 10
+        self.health = self.type_.health * (self.level ** 1.5 + self.iv_health) // 12 + 1
+        self.damage = self.type_.damage * (self.level ** 1.5 + self.iv_damage) // 12 + 1
+        self.defense = self.type_.defense * (self.level ** 1.5 + self.iv_defense) // 12 + 1
+        self.speed = self.type_.speed * (self.level ** 1.5 + self.iv_speed) // 12 + 1
+        self.precision = self.type_.precision * (self.level * 1.5 + self.iv_precision) // 12 + 1
+
+        self.max_health = self.health
 
         self.mean = sum([self.health, self.damage, self.defense, self.speed, self.precision])
 
@@ -239,6 +245,20 @@ class Pokemon:
             self.xp -= self.xp_need
             self.xp_need *= 2.5 * math.sin(self.level)
             self.set_standard_stats()
+
+    def attack_received(self, pokemon, attack, player_turn=True):
+        from funcs import health_bar
+        
+        if player_turn:
+            print(f'{pokemon.name} Ha usado "{attack.name}"')
+
+        self.health -= attack.damage / ((self.defense+1) / 2)
+
+        if self.health <= 0:
+            self.is_down = True
+            self.health = 0
+        
+        self.health_bar = health_bar(self)
 
 
 class Skill:
@@ -282,61 +302,38 @@ class Type:
         self.counter = counter
 
 
-import inspect
-import copy
-
-def to_dict(object_):
-    denied_data = (str, int, float, bool, list, tuple)
-    obj = copy.deepcopy(object_)
-
-    if not isinstance(obj, denied_data) and obj:
-        if isinstance(obj, dict):
-            dict_ = obj
-        else:
-            dict_ = vars(obj)
-            dict_['object_name'] = type(obj).__name__
+class Object:
+    def __init__(self, name, price, description, use):
+        self.name = name
+        self.price = price
+        self.description = description
         
-        for key, value in dict_.items():
-            dict_[key] = to_dict(value)
+        self.object_info = f'{name} - {price}$'
+        
+        self.owner = None
+        self.pokemon = None
 
-        return dict_
-    
-    if isinstance(obj, list):
-        for i in range(len(obj)):
-            obj[i] = to_dict(obj[i])
+        # Function
+        self.use = use
 
-    return obj
+    def set_owner(player):
+        player_money = player.money
+        price = self.price
 
-def to_object(dictionary):
-    dict_ = copy.deepcopy(dictionary)
-
-    if not isinstance(dict_, dict) or 'object_name' not in dict_:
-        return dict_
-
-    obj = object_map[dict_['object_name']]
-    
-    init_parameters = inspect.signature(obj)
-    init_parameters = list(init_parameters.parameters.keys())
-    init_parameters = [dict_[p] for p in init_parameters]
-
-    obj = obj(*init_parameters)
-
-    for key, value in dict_.items():
-        if isinstance(dict_[key], list):
-            setattr(obj, key, [to_object(x) for x in dict_[key]])        
-        elif isinstance(dict_[key], dict):
-            setattr(obj, key, to_object(dict_[key]))
+        if player_money >= price:
+            player.money -= price
+            self.owner = player
         else:
-            setattr(obj, key, value)
+            return 0
 
-    return obj
+    def set_pokemon(pokemon):
+        self.pokemon = pokemon
 
-def on_key(key):
-    return key.name
-
+ 
 object_map = {'Player': Player,
               'Menu': Menu,
               'Pokemon': Pokemon,
               'Skill': Skill,
               'Type': Type
               }
+

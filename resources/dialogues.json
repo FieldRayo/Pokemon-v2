@@ -55,13 +55,13 @@
 
   "tutorial": {
 
-    "introduction1":{
+    "dialogue1":{
       "dialogue": "Bienvenido a este mundo de pokemon,|15| antes de iniciar con tu aventura\nte dare las instrucciones para que puedas tener una correcta experiencia|15|",
       "requeriments": [],
       "input": false
     },
 
-    "introduction2":{
+    "dialogue2":{
       "dialogue": "A continuacion tendras tu primera batalla pokémon!|20| ¿No es emocionante?|20|\n¡Claro que lo es!|15|, Tu primera batalla sera contra 'Yalo'|15| un pokemon de tipo electrico",
       "requeriments": [],
       "input": false

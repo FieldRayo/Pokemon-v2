@@ -1,9 +1,10 @@
 {
   "game_select_menu": ["name", "id"],
-
+  
+  "battle_menu": ["opponent_pokemon.health_bar", "principal_pokemon.health_bar"],
   "battle_menu_attack": ["principal_pokemon.skills"],
   "change_pokemon_menu": ["pokemon_team.name"],
-  "use_item_menu": ["objects", "objects.price"],
+  "use_item_menu": ["objects.object_info"],
   "actual_pokemon_menu": [
     "principal_pokemon.level",
     "principal_pokemon.damage",
